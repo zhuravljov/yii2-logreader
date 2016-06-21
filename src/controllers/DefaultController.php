@@ -31,6 +31,7 @@ class DefaultController extends Controller
                 'slug' => Inflector::slug($name),
                 'alias' => $alias,
                 'fileName' => $fileName,
+                'counts' => $this->module->getLogCounts($fileName),
                 'fileSize' => file_exists($fileName) ? filesize($fileName) : 0,
             ];
         }
