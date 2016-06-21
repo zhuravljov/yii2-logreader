@@ -11,6 +11,10 @@ class Module extends \yii\base\Module
      * @inheritdoc
      */
     public $controllerNamespace = 'zhuravljov\yii\logreader\controllers';
+    /**
+     * @var array
+     */
+    public $aliases = [];
 
     /**
      * @inheritdoc

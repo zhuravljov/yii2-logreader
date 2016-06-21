@@ -1,12 +1,38 @@
+<?php
+/**
+ * @var \yii\web\View $this
+ * @var array $logs
+ */
+
+use yii\helpers\Html;
+
+$this->title = 'Logs';
+$this->params['breadcrumbs'][] = 'Logs';
+?>
 <div class="logreader-default-index">
-    <h1><?= $this->context->action->uniqueId ?></h1>
-    <p>
-        This is the view content for action "<?= $this->context->action->id ?>".
-        The action belongs to the controller "<?= get_class($this->context) ?>"
-        in the "<?= $this->context->module->id ?>" module.
-    </p>
-    <p>
-        You may customize this page by editing the following file:<br>
-        <code><?= __FILE__ ?></code>
-    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Size</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach ($logs as $info): ?>
+                <tr>
+                    <td>
+                        <h5>
+                            <?= Html::encode($info['name']) ?><br/>
+                            <small><?= Html::encode($info['fileName']) ?></small>
+                        </h5>
+                    </td>
+                    <td><?= Yii::$app->formatter->asShortSize($info['fileSize']) ?></td>
+                    <td>
+                        <?= Html::a('View', ['view', 'slug' => $info['slug']], ['target' => '_blank']) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
 </div>
