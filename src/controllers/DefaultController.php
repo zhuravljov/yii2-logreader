@@ -25,14 +25,15 @@ class DefaultController extends Controller
     {
         $logs = [];
         foreach ($this->module->aliases as $name => $alias) {
-            $fileName = Yii::getAlias($alias);
             $logs[] = [
                 'name' => $name,
                 'slug' => Inflector::slug($name),
                 'alias' => $alias,
-                'fileName' => $fileName,
+                'fileName' => $fileName = Yii::getAlias($alias),
+                'exist' => $exist = file_exists($fileName),
+                'size' => $exist ? filesize($fileName) : null,
+                'updated' => $exist ? filemtime($fileName) : null,
                 'counts' => $this->module->getLogCounts($fileName),
-                'fileSize' => file_exists($fileName) ? filesize($fileName) : 0,
             ];
         }
 
@@ -54,6 +55,16 @@ class DefaultController extends Controller
         } else {
             throw new NotFoundHttpException('Log not found.');
         }
+    }
+
+    public function actionHistory($slug)
+    {
+
+    }
+
+    public function actionArchive($slug)
+    {
+
     }
 
     /**

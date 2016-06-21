@@ -19,6 +19,7 @@ $module = $this->context->module;
                 <th>Name</th>
                 <th>Counts</th>
                 <th>Size</th>
+                <th>Updated</th>
                 <th></th>
             </tr>
         </thead>
@@ -48,7 +49,10 @@ $module = $this->context->module;
                         ?>
                     </td>
                     <td>
-                        <?= Yii::$app->formatter->asShortSize($info['fileSize']) ?>
+                        <?= Yii::$app->formatter->asShortSize($info['size']) ?>
+                    </td>
+                    <td>
+                        <?= Yii::$app->formatter->asRelativeTime($info['updated']) ?>
                     </td>
                     <td>
                         <?= Html::a('View', ['view', 'slug' => $info['slug']], ['target' => '_blank']) ?>
@@ -58,3 +62,12 @@ $module = $this->context->module;
         </tbody>
     </table>
 </div>
+<?php
+$this->registerCss(<<<CSS
+
+.logreader-default-index .table tbody td {
+    vertical-align: middle;
+}
+
+CSS
+);

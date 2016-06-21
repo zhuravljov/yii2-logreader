@@ -49,7 +49,7 @@ class Module extends \yii\base\Module
      */
     public function getLogCounts($fileName, $force = false)
     {
-        if (!file_exists($fileName)) return null;
+        if (!file_exists($fileName)) return [];
 
         $key = $fileName . '#counts';
         if (!$force && ($counts = Yii::$app->cache->get($key)) !== false) {
