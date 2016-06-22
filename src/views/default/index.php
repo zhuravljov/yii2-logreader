@@ -8,11 +8,8 @@ use yii\helpers\Html;
 
 $this->title = 'Logs';
 $this->params['breadcrumbs'][] = 'Logs';
-
-/** @var \zhuravljov\yii\logreader\Module $module */
-$module = $this->context->module;
 ?>
-<div class="logreader-default-index">
+<div class="logreader-index">
     <table class="table">
         <thead>
             <tr>
@@ -29,24 +26,11 @@ $module = $this->context->module;
                     <td>
                         <h5>
                             <?= Html::encode($info['name']) ?><br/>
-                            <small><?= Html::encode($info['fileName']) ?></small>
+                            <small><?= Html::encode($info['file']) ?></small>
                         </h5>
                     </td>
                     <td>
-                        <?php
-                        foreach ($info['counts'] as $level => $count) {
-                            if (isset($module->levelClasses[$level])) {
-                                $class = $module->levelClasses[$level];
-                            } else {
-                                $class = $module->defaultLevelClass;
-                            }
-                            echo Html::tag('span', $count, [
-                                'class' => 'label ' . $class,
-                                'title' => $level,
-                            ]);
-                            echo ' ';
-                        }
-                        ?>
+                        <?= $this->render('_counts', ['counts' => $info['counts']]) ?>
                     </td>
                     <td>
                         <?= Yii::$app->formatter->asShortSize($info['size']) ?>
@@ -55,7 +39,19 @@ $module = $this->context->module;
                         <?= Yii::$app->formatter->asRelativeTime($info['updated']) ?>
                     </td>
                     <td>
-                        <?= Html::a('View', ['view', 'slug' => $info['slug']], ['target' => '_blank']) ?>
+                        <?= Html::a('History', ['history', 'slug' => $info['slug']], [
+                            'class' => 'btn btn-xs btn-default',
+                        ]) ?>
+                        <?php if ($info['exist']): ?>
+                            <?= Html::a('View', ['view', 'slug' => $info['slug']], [
+                                'class' => 'btn btn-xs btn-default',
+                                'target' => '_blank'
+                            ]) ?>
+                            <?= Html::a('Archive', ['archive', 'slug' => $info['slug']], [
+                                'class' => 'btn btn-xs btn-default',
+                                'data' => ['method' => 'post', 'confirm' => 'Are you sure?'],
+                            ]) ?>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -65,7 +61,7 @@ $module = $this->context->module;
 <?php
 $this->registerCss(<<<CSS
 
-.logreader-default-index .table tbody td {
+.logreader-index .table tbody td {
     vertical-align: middle;
 }
 
