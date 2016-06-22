@@ -89,9 +89,9 @@ class DefaultController extends Controller
             ];
         }
 
-        uasort($logs, function($a, $b) {
-            if ($a['updated'] < $b['updated']) return -1;
-            if ($a['updated'] > $b['updated']) return 1;
+        usort($logs, function($a, $b) {
+            if ($a['updated'] < $b['updated']) return 1;
+            if ($a['updated'] > $b['updated']) return -1;
             return 0;
         });
 
