@@ -9,6 +9,9 @@ use yii\web\Application;
 
 /**
  * LogReader module definition class
+ *
+ * @property Log[] $logs
+ * @property integer $totalCount
  */
 class Module extends \yii\base\Module implements BootstrapInterface
 {
@@ -48,5 +51,49 @@ class Module extends \yii\base\Module implements BootstrapInterface
         } else {
             throw new InvalidConfigException('Can use for web application only.');
         }
+    }
+
+    /**
+     * @return Log[]
+     */
+    public function getLogs()
+    {
+        $logs = [];
+        foreach ($this->aliases as $name => $alias) {
+            $logs[] = new Log($name, $alias);
+        }
+
+        return $logs;
+    }
+
+    /**
+     * @param string $slug
+     * @param null|string $stamp
+     * @return null|Log
+     */
+    public function findLog($slug, $stamp)
+    {
+        foreach ($this->aliases as $name => $alias) {
+            if ($slug === Log::extractSlug($name)) {
+                return new Log($name, $alias, $stamp);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return integer
+     */
+    public function getTotalCount()
+    {
+        $total = 0;
+        foreach ($this->getLogs() as $log) {
+            foreach ($log->getCounts() as $count) {
+                $total += $count;
+            }
+        }
+
+        return $total;
     }
 }

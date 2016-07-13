@@ -1,7 +1,7 @@
 <?php
 /**
  * @var \yii\web\View $this
- * @var array $logs
+ * @var \zhuravljov\yii\logreader\Log[] $logs
  */
 
 use yii\helpers\Html;
@@ -21,33 +21,33 @@ $this->params['breadcrumbs'][] = 'Logs';
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($logs as $info): ?>
+            <?php foreach ($logs as $log): ?>
                 <tr>
                     <td>
                         <h5>
-                            <?= Html::encode($info['name']) ?><br/>
-                            <small><?= Html::encode($info['file']) ?></small>
+                            <?= Html::encode($log->name) ?><br/>
+                            <small><?= Html::encode(substr($log->fileName, 0)) ?></small>
                         </h5>
                     </td>
                     <td>
-                        <?= $this->render('_counts', ['counts' => $info['counts']]) ?>
+                        <?= $this->render('_counts', ['log' => $log]) ?>
                     </td>
                     <td>
-                        <?= Yii::$app->formatter->asShortSize($info['size']) ?>
+                        <?= Yii::$app->formatter->asShortSize($log->size) ?>
                     </td>
                     <td>
-                        <?= Yii::$app->formatter->asRelativeTime($info['updated']) ?>
+                        <?= Yii::$app->formatter->asRelativeTime($log->updatedAt) ?>
                     </td>
                     <td>
-                        <?= Html::a('History', ['history', 'slug' => $info['slug']], [
+                        <?= Html::a('History', ['history', 'slug' => $log->slug], [
                             'class' => 'btn btn-xs btn-default',
                         ]) ?>
-                        <?php if ($info['exist']): ?>
-                            <?= Html::a('View', ['view', 'slug' => $info['slug']], [
+                        <?php if ($log->isExist): ?>
+                            <?= Html::a('View', ['view', 'slug' => $log->slug], [
                                 'class' => 'btn btn-xs btn-default',
                                 'target' => '_blank'
                             ]) ?>
-                            <?= Html::a('Archive', ['archive', 'slug' => $info['slug']], [
+                            <?= Html::a('Archive', ['archive', 'slug' => $log->slug], [
                                 'class' => 'btn btn-xs btn-default',
                                 'data' => ['method' => 'post', 'confirm' => 'Are you sure?'],
                             ]) ?>

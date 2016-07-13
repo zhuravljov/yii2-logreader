@@ -2,8 +2,7 @@
 /**
  * @var \yii\web\View $this
  * @var string $name
- * @var string $slug
- * @var array $logs
+ * @var \zhuravljov\yii\logreader\Log[] $logs
  */
 
 use yii\helpers\Html;
@@ -24,22 +23,22 @@ $this->params['breadcrumbs'][] = $name;
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($logs as $info): ?>
+        <?php foreach ($logs as $log): ?>
             <tr>
                 <td>
-                    <?= Html::encode(pathinfo($info['file'], PATHINFO_BASENAME)) ?><br/>
+                    <?= Html::encode(pathinfo($log->fileName, PATHINFO_BASENAME)) ?><br/>
                 </td>
                 <td>
-                    <?= $this->render('_counts', ['counts' => $info['counts']]) ?>
+                    <?= $this->render('_counts', ['log' => $log]) ?>
                 </td>
                 <td>
-                    <?= Yii::$app->formatter->asShortSize($info['size']) ?>
+                    <?= Yii::$app->formatter->asShortSize($log->size) ?>
                 </td>
                 <td>
-                    <?= Yii::$app->formatter->asRelativeTime($info['updated']) ?>
+                    <?= Yii::$app->formatter->asRelativeTime($log->updatedAt) ?>
                 </td>
                 <td>
-                    <?= Html::a('View', ['view', 'slug' => $slug, 'stamp' => $info['stamp']], [
+                    <?= Html::a('View', ['view', 'slug' => $log->slug, 'stamp' => $log->stamp], [
                         'class' => 'btn btn-xs btn-default',
                         'target' => '_blank'
                     ]) ?>
