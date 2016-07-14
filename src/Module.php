@@ -83,6 +83,20 @@ class Module extends \yii\base\Module implements BootstrapInterface
     }
 
     /**
+     * @param Log $log
+     * @return Log[]
+     */
+    public function getHistory(Log $log)
+    {
+        $logs = [];
+        foreach (glob(Log::extractFileName($log->alias, '*')) as $fileName) {
+            $logs[] = new Log($log->name, $log->alias, Log::extractFileStamp($log->alias, $fileName));
+        }
+
+        return $logs;
+    }
+
+    /**
      * @return integer
      */
     public function getTotalCount()

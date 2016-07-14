@@ -3,6 +3,7 @@
 namespace zhuravljov\yii\logreader\controllers;
 
 use Yii;
+use yii\data\ArrayDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use zhuravljov\yii\logreader\Log;
@@ -24,7 +25,17 @@ class DefaultController extends Controller
     public function actionIndex()
     {
         return $this->render('index', [
-            'logs' => $this->module->getLogs(),
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => $this->module->getLogs(),
+                'sort' => [
+                    'attributes' => [
+                        'name',
+                        'size' => ['default' => SORT_DESC],
+                        'updatedAt' => ['default' => SORT_DESC],
+                    ],
+                ],
+                'pagination' => ['pageSize' => 0],
+            ]),
         ]);
     }
 
@@ -56,20 +67,20 @@ class DefaultController extends Controller
     public function actionHistory($slug)
     {
         $log = $this->find($slug, null);
-        $logs = [];
-        foreach (glob(Log::extractFileName($log->alias, '*')) as $fileName) {
-            $logs[] = new Log($log->name, $log->alias, Log::extractFileStamp($log->alias, $fileName));
-        }
-
-        usort($logs, function(Log $a, Log $b) {
-            if ($a->updatedAt < $b->updatedAt) return 1;
-            if ($a->updatedAt > $b->updatedAt) return -1;
-            return 0;
-        });
 
         return $this->render('history', [
             'name' => $log->name,
-            'logs' => $logs,
+            'dataProvider' => new ArrayDataProvider([
+                'allModels' => $this->module->getHistory($log),
+                'sort' => [
+                    'attributes' => [
+                        'fileName',
+                        'size' => ['default' => SORT_DESC],
+                        'updatedAt' => ['default' => SORT_DESC],
+                    ],
+                    'defaultOrder' => ['updatedAt' => SORT_DESC],
+                ],
+            ]),
         ]);
     }
 

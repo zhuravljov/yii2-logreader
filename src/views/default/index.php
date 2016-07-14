@@ -1,62 +1,79 @@
 <?php
 /**
  * @var \yii\web\View $this
- * @var \zhuravljov\yii\logreader\Log[] $logs
+ * @var \yii\data\ArrayDataProvider $dataProvider
  */
 
+use yii\grid\GridView;
 use yii\helpers\Html;
+use zhuravljov\yii\logreader\Log;
 
 $this->title = 'Logs';
 $this->params['breadcrumbs'][] = 'Logs';
 ?>
 <div class="logreader-index">
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Counts</th>
-                <th>Size</th>
-                <th>Updated</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach ($logs as $log): ?>
-                <tr>
-                    <td>
-                        <h5>
-                            <?= Html::encode($log->name) ?><br/>
-                            <small><?= Html::encode(substr($log->fileName, 0)) ?></small>
-                        </h5>
-                    </td>
-                    <td>
-                        <?= $this->render('_counts', ['log' => $log]) ?>
-                    </td>
-                    <td>
-                        <?= Yii::$app->formatter->asShortSize($log->size) ?>
-                    </td>
-                    <td>
-                        <?= Yii::$app->formatter->asRelativeTime($log->updatedAt) ?>
-                    </td>
-                    <td>
-                        <?= Html::a('History', ['history', 'slug' => $log->slug], [
+    <?= GridView::widget([
+        'layout' => '{items}',
+        'tableOptions' => ['class' => 'table'],
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            [
+                'attribute' => 'name',
+                'format' => 'raw',
+                'value' => function (Log $log) {
+                    return Html::tag('h5', join("\n", [
+                        Html::encode($log->name),
+                        '<br/>',
+                        Html::tag('small', Html::encode($log->fileName)),
+                    ]));
+                },
+            ],
+            [
+                'attribute' => 'counts',
+                'format' => 'raw',
+                'headerOptions' => ['class' => 'sort-ordinal'],
+                'value' => function (Log $log) {
+                    return $this->render('_counts', ['log' => $log]);
+                },
+            ],
+            [
+                'attribute' => 'size',
+                'format' => 'shortSize',
+                'headerOptions' => ['class' => 'sort-ordinal'],
+            ],
+            [
+                'attribute' => 'updatedAt',
+                'format' => 'relativeTime',
+                'headerOptions' => ['class' => 'sort-numerical'],
+            ],
+            [
+                'class' => '\yii\grid\ActionColumn',
+                'template' => '{history} {view} {archive}',
+                'urlCreator' => function ($action, Log $log) {
+                    return [$action, 'slug' => $log->slug];
+                },
+                'buttons' => [
+                    'history' => function ($url) {
+                        return Html::a('History', $url, [
                             'class' => 'btn btn-xs btn-default',
-                        ]) ?>
-                        <?php if ($log->isExist): ?>
-                            <?= Html::a('View', ['view', 'slug' => $log->slug], [
-                                'class' => 'btn btn-xs btn-default',
-                                'target' => '_blank'
-                            ]) ?>
-                            <?= Html::a('Archive', ['archive', 'slug' => $log->slug], [
-                                'class' => 'btn btn-xs btn-default',
-                                'data' => ['method' => 'post', 'confirm' => 'Are you sure?'],
-                            ]) ?>
-                        <?php endif; ?>
-                    </td>
-                </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
+                        ]);
+                    },
+                    'view' => function ($url, Log $log) {
+                        return !$log->isExist ? '' : Html::a('View', $url, [
+                            'class' => 'btn btn-xs btn-default',
+                            'target' => '_blank',
+                        ]);
+                    },
+                    'archive' => function ($url, Log $log) {
+                        return !$log->isExist ? '' : Html::a('Archive', $url, [
+                            'class' => 'btn btn-xs btn-default',
+                            'data' => ['method' => 'post', 'confirm' => 'Are you sure?'],
+                        ]);
+                    },
+                ],
+            ],
+        ],
+    ]) ?>
 </div>
 <?php
 $this->registerCss(<<<CSS

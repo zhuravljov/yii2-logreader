@@ -2,51 +2,63 @@
 /**
  * @var \yii\web\View $this
  * @var string $name
- * @var \zhuravljov\yii\logreader\Log[] $logs
+ * @var \yii\data\ArrayDataProvider $dataProvider
  */
 
+use yii\grid\GridView;
 use yii\helpers\Html;
+use zhuravljov\yii\logreader\Log;
 
 $this->title = $name;
 $this->params['breadcrumbs'][] = ['label' => 'Logs', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $name;
 ?>
 <div class="logreader-history">
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Name</th>
-            <th>Counts</th>
-            <th>Size</th>
-            <th>Updated</th>
-            <th></th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($logs as $log): ?>
-            <tr>
-                <td>
-                    <?= Html::encode(pathinfo($log->fileName, PATHINFO_BASENAME)) ?><br/>
-                </td>
-                <td>
-                    <?= $this->render('_counts', ['log' => $log]) ?>
-                </td>
-                <td>
-                    <?= Yii::$app->formatter->asShortSize($log->size) ?>
-                </td>
-                <td>
-                    <?= Yii::$app->formatter->asRelativeTime($log->updatedAt) ?>
-                </td>
-                <td>
-                    <?= Html::a('View', ['view', 'slug' => $log->slug, 'stamp' => $log->stamp], [
-                        'class' => 'btn btn-xs btn-default',
-                        'target' => '_blank'
-                    ]) ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
-        </tbody>
-    </table>
+    <?= GridView::widget([
+        'tableOptions' => ['class' => 'table'],
+        'dataProvider' => $dataProvider,
+        'columns' => [
+            [
+                'attribute' => 'fileName',
+                'format' => 'raw',
+                'value' => function (Log $log) {
+                    return pathinfo($log->fileName, PATHINFO_BASENAME);
+                },
+            ],
+            [
+                'attribute' => 'counts',
+                'format' => 'raw',
+                'value' => function (Log $log) {
+                    return $this->render('_counts', ['log' => $log]);
+                },
+            ],
+            [
+                'attribute' => 'size',
+                'format' => 'shortSize',
+                'headerOptions' => ['class' => 'sort-ordinal'],
+            ],
+            [
+                'attribute' => 'updatedAt',
+                'format' => 'relativeTime',
+                'headerOptions' => ['class' => 'sort-numerical'],
+            ],
+            [
+                'class' => '\yii\grid\ActionColumn',
+                'template' => '{view}',
+                'urlCreator' => function ($action, Log $log) {
+                    return [$action, 'slug' => $log->slug];
+                },
+                'buttons' => [
+                    'view' => function ($url) {
+                        return Html::a('View', $url, [
+                            'class' => 'btn btn-xs btn-default',
+                            'target' => '_blank',
+                        ]);
+                    },
+                ],
+            ],
+        ],
+    ]) ?>
 </div>
 <?php
 $this->registerCss(<<<CSS
