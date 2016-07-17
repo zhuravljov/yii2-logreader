@@ -46,7 +46,7 @@ $this->params['breadcrumbs'][] = $name;
                 'class' => '\yii\grid\ActionColumn',
                 'template' => '{view}',
                 'urlCreator' => function ($action, Log $log) {
-                    return [$action, 'slug' => $log->slug];
+                    return [$action, 'slug' => $log->slug, 'stamp' => $log->stamp];
                 },
                 'buttons' => [
                     'view' => function ($url) {
