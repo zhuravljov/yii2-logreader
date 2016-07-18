@@ -5,6 +5,7 @@ namespace zhuravljov\yii\logreader;
 use Yii;
 use yii\base\Object;
 use yii\caching\FileDependency;
+use yii\helpers\FileHelper;
 use yii\helpers\Inflector;
 
 /**
@@ -180,7 +181,7 @@ class Log extends Object
      */
     public static function extractFileName($alias, $stamp = null)
     {
-        $fileName = Yii::getAlias($alias, false);
+        $fileName = FileHelper::normalizePath(Yii::getAlias($alias, false));
         if ($stamp === null) return $fileName;
 
         $info = pathinfo($fileName);
@@ -199,7 +200,7 @@ class Log extends Object
      */
     public static function extractFileStamp($alias, $fileName)
     {
-        $originName = Yii::getAlias($alias, false);
+        $originName = FileHelper::normalizePath(Yii::getAlias($alias, false));
         $origInfo = pathinfo($originName);
         $fileInfo = pathinfo($fileName);
         if (
