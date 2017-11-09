@@ -3,7 +3,7 @@
 namespace zhuravljov\yii\logreader;
 
 use Yii;
-use yii\base\Object;
+use yii\base\BaseObject;
 use yii\caching\FileDependency;
 use yii\helpers\FileHelper;
 use yii\helpers\Inflector;
@@ -24,7 +24,7 @@ use yii\helpers\Inflector;
  *
  * @author Roman Zhuravlev <zhuravljov@gmail.com>
  */
-class Log extends Object
+class Log extends BaseObject
 {
     private $_name;
     private $_alias;
